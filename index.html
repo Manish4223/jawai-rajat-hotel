@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jawai Rajat | Premium Hotel & Event Destination</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <img src="Logo.jpg" alt="Jawai Rajat Hotel logo" />
+                <div class="logo-text">
+                    <span class="brand-name">Jawai Rajat</span>
+                    <span class="brand-tagline">Hotel & Event Destination</span>
+                </div>
+            </div>
+            <nav id="main-nav">
+                <a href="#hero" onclick="closeMenu()">Home</a>
+                <a href="#rooms" onclick="closeMenu()">Rooms</a>
+                <a href="#experiences" onclick="closeMenu()">Experiences</a>
+                <a href="#gallery" onclick="closeMenu()">Gallery</a>
+                <a href="#booking" onclick="closeMenu()">Book</a>
+                <a href="#contact" onclick="closeMenu()">Contact</a>
+            </nav>
+            <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/91XXXXXXXXXX?text=Hello%2C%20I%20want%20to%20enquire%20about%20booking%20at%20Jawai%20Rajat%20Hotel."
+       class="whatsapp-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+    </a>
+
+    <main>
+        <section id="hero" class="hero">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <div>
+                    <p class="eyebrow">Premium Hotel & Event Destination</p>
+                    <h1>Celebrate Your Special Moments at Jawai Rajat</h1>
+                    <p class="subtitle">
+                        Jawai Rajat is the perfect venue for weddings, birthday celebrations, anniversaries, corporate events,
+                        and grand functions. We provide comfortable luxury rooms, spacious banquet facilities, premium
+                        restaurant services, and high-quality catering to make your special moments truly unforgettable.
+                        Experience the best hospitality, excellent service, and delicious food under one roof.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#booking" class="btn primary">Book your stay</a>
+                        <a href="#rooms" class="btn ghost">View rooms</a>
+                    </div>
+                    <div class="hero-meta">
+                        <div>
+                            <span class="meta-label">Check‑in</span>
+                            <span class="meta-value">2:00 PM</span>
+                        </div>
+                        <div>
+                            <span class="meta-label">Check‑out</span>
+                            <span class="meta-value">11:00 AM</span>
+                        </div>
+                        <div>
+                            <span class="meta-label">Location</span>
+                            <span class="meta-value">Jawai Rajat Hotel, Jalore Road, Takhatgrah, Rajasthan 306912</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="quick-booking" class="quick-booking">
+                    <h2>Quick booking</h2>
+                    <div class="field-group">
+                        <label for="checkin">Check‑in</label>
+                        <input type="date" id="checkin" name="checkin" required />
+                    </div>
+                    <div class="field-group">
+                        <label for="checkout">Check‑out</label>
+                        <input type="date" id="checkout" name="checkout" required />
+                    </div>
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="guests">Guests</label>
+                            <select id="guests" name="guests" required>
+                                <option value="" disabled selected>Select</option>
+                                <option value="1">1 Guest</option>
+                                <option value="2">2 Guests</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests</option>
+                                <option value="5+">5+ Guests</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="room-type">Room type</label>
+                            <select id="room-type" name="roomType" required>
+                                <option value="" disabled selected>Select</option>
+                                <option value="couple-stay">Couple Stay</option>
+                                <option value="birthday">Birthday / Celebration</option>
+                                <option value="meeting">Meeting / Small Event</option>
+                                <option value="marriage">Marriage / Wedding</option>
+                                <option value="entire-hotel">Entire Hotel Booking</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn primary full-width">Check availability</button>
+                    <p class="form-note" id="quick-status"></p>
+                </form>
+            </div>
+        </section>
+
+        <section id="events" class="section soft-bg">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Premium Hotel &amp; Event Destination</h2>
+                    <p>Celebrate weddings, birthdays &amp; special events at Jawai Rajat.</p>
+                </div>
+                <p>
+                    Jawai Rajat is the perfect venue for weddings, birthday celebrations, anniversaries, corporate events,
+                    and grand functions. We provide comfortable luxury rooms, spacious banquet facilities, premium restaurant
+                    services, and high-quality catering to make your special moments truly unforgettable. Experience the best
+                    hospitality, excellent service, and delicious food under one roof.
+                </p>
+            </div>
+        </section>
+
+        <section id="rooms" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Rooms &amp; Event Stays</h2>
+                    <p>
+                        Comfortable and elegant rooms designed for guests attending weddings, birthdays, corporate events,
+                        and special celebrations. Experience premium hospitality, modern facilities, and exceptional service
+                        during your stay at Jawai Rajat.
+                    </p>
+                </div>
+                <div class="card-grid">
+                    <article class="card">
+                        <div class="card-tag">Most popular</div>
+                        <div class="card-icon">🥂</div>
+                        <h3>Couple Stay</h3>
+                        <p class="card-meta">2 Guests • Private room • Romantic setup</p>
+                        <p class="card-body">
+                            Perfect romantic getaway for couples — cozy private room with special decoration, candle-light dinner arrangement, and personalized service.
+                        </p>
+                        <ul class="card-features">
+                            <li>Special room decoration</li>
+                            <li>Candle-light dinner option</li>
+                            <li>Couple photography setup</li>
+                        </ul>
+                        <p class="price">From ₹4,500 / night</p>
+                        <a href="#booking" class="btn primary card-btn">Book Now</a>
+                    </article>
+                    <article class="card">
+                        <div class="card-icon">🎂</div>
+                        <h3>Birthday, Meeting & Small Events</h3>
+                        <p class="card-meta">Upto 50 guests • Hall • Catering available</p>
+                        <p class="card-body">
+                            Celebrate birthdays, host corporate meetings, or organize small private events with our dedicated event space, decoration, and catering services.
+                        </p>
+                        <ul class="card-features">
+                            <li>Birthday decoration & cake</li>
+                            <li>Projector & meeting setup</li>
+                            <li>Custom catering menu</li>
+                        </ul>
+                        <p class="price">From ₹8,000 / event</p>
+                        <a href="#booking" class="btn primary card-btn">Book Now</a>
+                    </article>
+                    <article class="card">
+                        <div class="card-icon">💍</div>
+                        <h3>Entire Hotel — Marriage & Grand Events</h3>
+                        <p class="card-meta">Full property • All rooms • Banquet hall</p>
+                        <p class="card-body">
+                            Book the entire Jawai Rajat for weddings, receptions, and grand celebrations. Full banquet hall, all rooms, premium catering, and dedicated event management team.
+                        </p>
+                        <ul class="card-features">
+                            <li>Full banquet hall & lawn</li>
+                            <li>All rooms included</li>
+                            <li>Premium catering & decor</li>
+                        </ul>
+                        <p class="price">Contact us for pricing</p>
+                        <a href="#contact" class="btn ghost card-btn">Enquire Now</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="experiences" class="section soft-bg">
+            <div class="container">
+                <div class="section-header">
+                    <h2>What We Offer at Jawai Rajat</h2>
+                    <p>Everything you need for a perfect stay, celebration, or event — all under one roof.</p>
+                </div>
+                <div class="experience-grid">
+                    <div class="exp-card">
+                        <div class="exp-icon">🏨</div>
+                        <h4>Luxury Rooms</h4>
+                        <p>Comfortable, well-furnished AC rooms with modern amenities for a relaxing stay.</p>
+                    </div>
+                    <div class="exp-card">
+                        <div class="exp-icon">🍽️</div>
+                        <h4>Restaurant &amp; Catering</h4>
+                        <p>Delicious veg &amp; non-veg cuisine, custom menus for events, and in-room dining service.</p>
+                    </div>
+                    <div class="exp-card">
+                        <div class="exp-icon">💒</div>
+                        <h4>Wedding Venue</h4>
+                        <p>Grand banquet hall and open lawn for weddings, receptions, and baraat with full decoration.</p>
+                    </div>
+                    <div class="exp-card">
+                        <div class="exp-icon">🎂</div>
+                        <h4>Birthday &amp; Celebrations</h4>
+                        <p>Special decoration, cake, DJ, and personalized arrangements for birthdays and anniversaries.</p>
+                    </div>
+                    <div class="exp-card">
+                        <div class="exp-icon">💼</div>
+                        <h4>Corporate Meetings</h4>
+                        <p>Fully equipped meeting hall with projector, sound system, and refreshment service.</p>
+                    </div>
+                    <div class="exp-card">
+                        <div class="exp-icon">🅿️</div>
+                        <h4>Ample Parking</h4>
+                        <p>Spacious parking area for guests and event attendees with 24/7 security.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Gallery</h2>
+                    <p>A glimpse of Jawai Rajat Hotel — rooms, events, and celebrations.</p>
+                </div>
+                <div class="gallery-grid" id="gallery-grid">
+                    <!-- Static fallback images (shown until dynamic loads) -->
+                    <div class="gallery-item"><img src="Hotel1.webp" alt="Exterior view of Jawai Rajat Hotel" /></div>
+                    <div class="gallery-item"><img src="Hotel_insideside.webp" alt="Hotel interior view" /></div>
+                    <div class="gallery-item"><img src="Bedroom.webp" alt="Luxury bedroom at Jawai Rajat" /></div>
+                    <div class="gallery-item"><img src="Room_full_view.webp" alt="Full room view at Jawai Rajat" /></div>
+                    <div class="gallery-item"><img src="Interior.webp" alt="Interior of Jawai Rajat Hotel" /></div>
+                    <div class="gallery-item"><img src="Bedroom.webp" alt="Premium room at Jawai Rajat" /></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="booking" class="section soft-bg">
+            <div class="container booking-layout">
+                <div>
+                    <h2>Booking request form</h2>
+                    <p>
+                        Share your travel dates and preferences. Our team will confirm availability and share a customized
+                        itinerary for your Jawai Rajat stay.
+                    </p>
+                    <div class="info-box">
+                        <p><strong>Direct reservations</strong></p>
+                        <p>Phone: +91‑XXXXXXXXXX</p>
+                        <p>Email: reservations@jawai-rajat.com</p>
+                    </div>
+                </div>
+
+                <form id="booking-form" class="booking-form">
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="full-name">Full name</label>
+                            <input type="text" id="full-name" name="fullName" placeholder="Your name" required />
+                        </div>
+                        <div class="field-group">
+                            <label for="phone">WhatsApp / Phone</label>
+                            <input type="tel" id="phone" name="phone" placeholder="+91‑" required />
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="you@example.com" required />
+                        </div>
+                        <div class="field-group">
+                            <label for="city">City / Country</label>
+                            <input type="text" id="city" name="city" placeholder="Where you are from" />
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="arrival">Arrival date</label>
+                            <input type="date" id="arrival" name="arrival" required />
+                        </div>
+                        <div class="field-group">
+                            <label for="departure">Departure date</label>
+                            <input type="date" id="departure" name="departure" required />
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="adults">Adults</label>
+                            <select id="adults" name="adults" required>
+                                <option value="" disabled selected>Select</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5+">5+</option>
+                            </select>
+                        </div>
+                        <div class="field-group">
+                            <label for="children">Children</label>
+                            <select id="children" name="children">
+                                <option value="0" selected>0</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4+">4+</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="stay-type">Type of booking</label>
+                        <select id="stay-type" name="stayType">
+                            <option value="" disabled selected>Select</option>
+                            <option value="couple">Couple Stay</option>
+                            <option value="birthday">Birthday Celebration</option>
+                            <option value="meeting">Corporate Meeting</option>
+                            <option value="small-event">Small Private Event</option>
+                            <option value="marriage">Marriage / Wedding</option>
+                            <option value="entire-hotel">Entire Hotel Booking</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label for="message">Special requests</label>
+                        <textarea
+                            id="message"
+                            name="message"
+                            rows="4"
+                            placeholder="Safaris, celebrations, dietary needs, special occasions..."
+                        ></textarea>
+                    </div>
+
+                    <button type="submit" class="btn primary full-width">Send booking request</button>
+                    <p class="form-note" id="booking-status"></p>
+                </form>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="container contact-layout">
+                <div>
+                    <h2>Get in Touch</h2>
+                    <p>Have a question or want to plan an event? Send us a message and we'll get back to you quickly.</p>
+                    <ul class="contact-list">
+                        <li>📍 Jalore Road, Takhatgarh, Rajasthan 306912</li>
+                        <li>📞 Phone / WhatsApp: +91‑XXXXXXXXXX</li>
+                        <li>✉️ Email: stay@jawai-rajat.com</li>
+                        <li>📸 Instagram: @jawai.rajat</li>
+                    </ul>
+                    <div class="info-box" style="margin-top:1.4rem">
+                        <p><strong>How to reach us</strong></p>
+                        <p style="margin-top:0.4rem;font-size:0.85rem">By air: Udaipur / Jodhpur (~3 hrs)</p>
+                        <p style="font-size:0.85rem">By rail: Falna / Jawai Bandh station</p>
+                        <p style="font-size:0.85rem">By road: Via NH from Udaipur, Jodhpur, Ahmedabad</p>
+                    </div>
+                </div>
+                <form id="contact-form" class="booking-form">
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label for="ct-name">Your name</label>
+                            <input type="text" id="ct-name" name="name" placeholder="Full name" required />
+                        </div>
+                        <div class="field-group">
+                            <label for="ct-phone">Phone / WhatsApp</label>
+                            <input type="tel" id="ct-phone" name="phone" placeholder="+91-" required />
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="ct-subject">Subject</label>
+                        <input type="text" id="ct-subject" name="subject" placeholder="Wedding enquiry, room availability…" />
+                    </div>
+                    <div class="field-group">
+                        <label for="ct-message">Message</label>
+                        <textarea id="ct-message" name="message" rows="4" placeholder="Tell us how we can help…" required></textarea>
+                    </div>
+                    <button type="submit" class="btn primary full-width">Send Message</button>
+                    <p class="form-note" id="contact-status"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p>© <span id="year"></span> Jawai Rajat. All rights reserved.</p>
+            <p class="footer-note">Designed as a sample booking website template.</p>
+        </div>
+    </footer>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

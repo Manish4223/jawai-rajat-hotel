@@ -1,0 +1,589 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Jawai Rajat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Poppins", sans-serif; background: #060708; color: #f5f5f5; min-height: 100vh; }
+
+    /* LOGIN */
+    #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-box {
+      background: #101114; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 1.4rem; padding: 2.2rem 2.4rem; width: min(380px, 92vw);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.85);
+    }
+    .login-logo { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .login-box h1 { font-size: 1.3rem; color: #f2c14f; margin-bottom: 0.2rem; }
+    .login-box .sub { font-size: 0.82rem; color: rgba(245,245,245,0.45); margin-bottom: 1.6rem; }
+    .lbl { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(245,245,245,0.55); margin-bottom: 0.3rem; display: block; }
+    .inp {
+      width: 100%; background: #111214; border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 0.7rem; padding: 0.7rem 0.9rem; color: #f5f5f5;
+      font: inherit; outline: none; margin-bottom: 1rem;
+    }
+    .inp:focus { border-color: #f2c14f; box-shadow: 0 0 0 1px rgba(242,193,79,0.5); }
+    .btn-gold {
+      width: 100%; padding: 0.75rem; border-radius: 999px; border: none; cursor: pointer;
+      background: linear-gradient(135deg, #f2c14f, #f08e4a); color: #151515;
+      font: 600 0.92rem "Poppins", sans-serif;
+    }
+    .btn-gold:hover { opacity: 0.9; }
+    #login-error { color: #feb2b2; font-size: 0.82rem; margin-top: 0.7rem; min-height: 1.2em; }
+
+    /* DASHBOARD */
+    #dashboard { display: none; }
+    .topbar {
+      background: rgba(6,7,8,0.97); border-bottom: 1px solid rgba(255,255,255,0.07);
+      padding: 0.8rem 2rem; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 0.6rem; }
+    .topbar-left h1 { font-size: 0.98rem; font-weight: 600; color: #f2c14f; }
+    .topbar-right { display: flex; align-items: center; gap: 0.6rem; }
+    .tbtn {
+      background: transparent; border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(245,245,245,0.75); padding: 0.35rem 0.9rem; border-radius: 999px;
+      cursor: pointer; font: inherit; font-size: 0.8rem; text-decoration: none; display: inline-block;
+    }
+    .tbtn:hover { border-color: #f2c14f; color: #f2c14f; }
+    .tbtn.danger:hover { border-color: #feb2b2; color: #feb2b2; }
+
+    .main { padding: 1.6rem 2rem; max-width: 1320px; margin: 0 auto; }
+
+    /* STATS */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px,1fr)); gap: 0.9rem; margin-bottom: 1.8rem; }
+    .sc { background: #101114; border: 1px solid rgba(255,255,255,0.06); border-radius: 1rem; padding: 1rem 1.2rem; }
+    .sc .si { font-size: 1.3rem; margin-bottom: 0.3rem; }
+    .sc .sl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(245,245,245,0.45); }
+    .sc .sv { font-size: 1.8rem; font-weight: 700; color: #f2c14f; line-height: 1.1; }
+
+    /* TABS */
+    .tabs { display: flex; gap: 0.2rem; margin-bottom: 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.07); flex-wrap: wrap; }
+    .tab-btn {
+      background: transparent; border: none; color: rgba(245,245,245,0.5);
+      padding: 0.6rem 1rem; font: 500 0.85rem "Poppins", sans-serif;
+      cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: #f5f5f5; }
+    .tab-btn.active { color: #f2c14f; border-bottom-color: #f2c14f; }
+    .tbadge {
+      display: inline-block; background: rgba(242,193,79,0.18); color: #f2c14f;
+      font-size: 0.66rem; padding: 0.05rem 0.42rem; border-radius: 999px; margin-left: 0.3rem;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* TOOLBAR */
+    .toolbar { display: flex; gap: 0.65rem; margin-bottom: 0.9rem; flex-wrap: wrap; align-items: center; }
+    .toolbar input, .toolbar select {
+      background: #111214; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 0.6rem; padding: 0.48rem 0.8rem; color: #f5f5f5;
+      font: inherit; font-size: 0.84rem; outline: none;
+    }
+    .toolbar input:focus, .toolbar select:focus { border-color: #f2c14f; }
+    .toolbar input { min-width: 200px; }
+    .cnt { font-size: 0.8rem; color: rgba(245,245,245,0.4); margin-left: auto; }
+
+    /* TABLE */
+    .tw { overflow-x: auto; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.06); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+    thead { background: #0c0d0f; }
+    th { padding: 0.7rem 0.9rem; text-align: left; font-weight: 500; color: rgba(245,245,245,0.5); white-space: nowrap; }
+    td { padding: 0.65rem 0.9rem; border-top: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .er td { text-align: center; padding: 2.5rem; color: rgba(245,245,245,0.3); }
+
+    /* BADGES */
+    .badge { display: inline-block; padding: 0.13rem 0.6rem; border-radius: 999px; font-size: 0.69rem; text-transform: uppercase; letter-spacing: 0.09em; font-weight: 500; }
+    .badge.pending   { background: rgba(242,193,79,0.15);  color: #f2c14f; }
+    .badge.confirmed { background: rgba(154,230,180,0.15); color: #9ae6b4; }
+    .badge.cancelled { background: rgba(254,178,178,0.15); color: #feb2b2; }
+    .badge.new       { background: rgba(144,205,244,0.15); color: #90cdf4; }
+    .badge.done      { background: rgba(154,230,180,0.15); color: #9ae6b4; }
+    .badge.unread    { background: rgba(242,193,79,0.15);  color: #f2c14f; }
+    .badge.read      { background: rgba(255,255,255,0.05); color: rgba(245,245,245,0.4); }
+    .badge.paid      { background: rgba(154,230,180,0.15); color: #9ae6b4; }
+    .badge.unpaid    { background: rgba(254,178,178,0.12); color: #feb2b2; }
+
+    /* ACTION BUTTONS */
+    .acts { display: flex; gap: 0.28rem; flex-wrap: wrap; }
+    .ab {
+      background: transparent; border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(245,245,245,0.75); padding: 0.2rem 0.55rem; border-radius: 0.4rem;
+      cursor: pointer; font-size: 0.73rem; font-family: inherit; white-space: nowrap;
+    }
+    .ab:hover         { border-color: #f2c14f; color: #f2c14f; }
+    .ab.ok:hover      { border-color: #9ae6b4; color: #9ae6b4; }
+    .ab.del:hover     { border-color: #feb2b2; color: #feb2b2; }
+
+    /* NOTES */
+    .ni {
+      background: #111214; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 0.4rem; padding: 0.22rem 0.5rem; color: #f5f5f5;
+      font: inherit; font-size: 0.77rem; width: 130px; outline: none;
+    }
+    .ni:focus { border-color: #f2c14f; }
+
+    /* GALLERY GRID */
+    .gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 1rem; margin-top: 1rem; }
+    .gal-item { position: relative; border-radius: 0.8rem; overflow: hidden; aspect-ratio: 4/3; background: #101114; border: 1px solid rgba(255,255,255,0.06); }
+    .gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .gal-del {
+      position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.75);
+      border: none; color: #feb2b2; border-radius: 0.4rem; padding: 0.2rem 0.5rem;
+      cursor: pointer; font-size: 0.75rem;
+    }
+    .gal-del:hover { background: rgba(254,178,178,0.2); }
+
+    /* UPLOAD ZONE */
+    .upload-zone {
+      border: 2px dashed rgba(255,255,255,0.15); border-radius: 1rem;
+      padding: 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s;
+    }
+    .upload-zone:hover { border-color: #f2c14f; }
+    .upload-zone input { display: none; }
+    .upload-zone p { font-size: 0.88rem; color: rgba(245,245,245,0.5); margin-top: 0.5rem; }
+
+    /* SETTINGS */
+    .settings-box { background: #101114; border: 1px solid rgba(255,255,255,0.06); border-radius: 1rem; padding: 1.5rem; max-width: 420px; }
+    .settings-box h3 { font-size: 1rem; margin-bottom: 1rem; color: #f2c14f; }
+    .msg-short { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px; cursor: pointer; color: rgba(245,245,245,0.65); }
+    .msg-short:hover { color: #f2c14f; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🏨</div>
+    <h1>Jawai Rajat Admin</h1>
+    <p class="sub">Enter admin password to access dashboard</p>
+    <label class="lbl">Password</label>
+    <input class="inp" type="password" id="pwd-input" placeholder="Admin password" autocomplete="current-password" />
+    <button class="btn-gold" onclick="doLogin()">Login</button>
+    <p id="login-error"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span>🏨</span>
+      <h1>Jawai Rajat — Admin</h1>
+    </div>
+    <div class="topbar-right">
+      <a class="tbtn" href="/" target="_blank">View Site ↗</a>
+      <button class="tbtn danger" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="stats" id="stats-grid"></div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('bookings',this)">Bookings <span class="tbadge" id="tb-b">0</span></button>
+      <button class="tab-btn" onclick="switchTab('enquiries',this)">Enquiries <span class="tbadge" id="tb-e">0</span></button>
+      <button class="tab-btn" onclick="switchTab('contacts',this)">Messages <span class="tbadge" id="tb-c">0</span></button>
+      <button class="tab-btn" onclick="switchTab('quickchecks',this)">Quick Checks <span class="tbadge" id="tb-q">0</span></button>
+      <button class="tab-btn" onclick="switchTab('payments',this)">Payments <span class="tbadge" id="tb-p">0</span></button>
+      <button class="tab-btn" onclick="switchTab('gallery',this)">Gallery</button>
+      <button class="tab-btn" onclick="switchTab('settings',this)">Settings</button>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div class="tab-panel active" id="tab-bookings">
+      <div class="toolbar">
+        <input type="text" id="bk-search" placeholder="Search name, phone, email…" oninput="filterBookings()" />
+        <select id="bk-status" onchange="filterBookings()">
+          <option value="all">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <span class="cnt" id="bk-cnt"></span>
+      </div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Arrival</th><th>Departure</th><th>Guests</th><th>Type</th><th>Status</th><th>Payment</th><th>Notes</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="bk-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ENQUIRIES -->
+    <div class="tab-panel" id="tab-enquiries">
+      <div class="toolbar"><span class="cnt" id="enq-cnt"></span></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Name</th><th>Phone</th><th>Event</th><th>Date</th><th>Guests</th><th>Message</th><th>Status</th><th>Received</th><th>Actions</th></tr></thead>
+          <tbody id="enq-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONTACTS -->
+    <div class="tab-panel" id="tab-contacts">
+      <div class="toolbar"><span class="cnt" id="ct-cnt"></span></div>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Name</th><th>Phone</th><th>Subject</th><th>Message</th><th>Status</th><th>Received</th><th>Actions</th></tr></thead>
+          <tbody id="ct-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- QUICK CHECKS -->
+    <div class="tab-panel" id="tab-quickchecks">
+      <div class="tw">
+        <table>
+          <thead><tr><th>Check-in</th><th>Check-out</th><th>Guests</th><th>Type</th><th>Time</th></tr></thead>
+          <tbody id="qc-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="tab-panel" id="tab-payments">
+      <div class="tw">
+        <table>
+          <thead><tr><th>Order ID</th><th>Booking ID</th><th>Amount</th><th>Currency</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody id="pay-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="tab-panel" id="tab-gallery">
+      <div class="upload-zone" onclick="document.getElementById('gal-file').click()">
+        <div style="font-size:2rem">📷</div>
+        <p>Click to upload image (JPG / PNG / WEBP, max 8MB)</p>
+        <input type="file" id="gal-file" accept="image/*" onchange="uploadImage(this)" />
+      </div>
+      <p id="upload-status" style="font-size:0.82rem;margin-top:0.6rem;color:rgba(245,245,245,0.6)"></p>
+      <div class="gal-grid" id="gal-grid"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tab-panel" id="tab-settings">
+      <div class="settings-box">
+        <h3>🔑 Change Admin Password</h3>
+        <label class="lbl">New Password</label>
+        <input class="inp" type="password" id="new-pwd" placeholder="Min 6 characters" />
+        <label class="lbl">Confirm Password</label>
+        <input class="inp" type="password" id="confirm-pwd" placeholder="Repeat password" />
+        <button class="btn-gold" style="width:auto;padding:0.6rem 1.4rem" onclick="changePassword()">Update Password</button>
+        <p id="pwd-msg" style="font-size:0.82rem;margin-top:0.6rem"></p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let token = localStorage.getItem("jr_admin_token") || "";
+let allBookings = [];
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const pwd = document.getElementById("pwd-input").value.trim();
+  if (!pwd) return;
+  const res  = await fetch("/api/admin/login", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password: pwd }),
+  });
+  const data = await res.json();
+  if (!data.success) { document.getElementById("login-error").textContent = data.message; return; }
+  token = data.token;
+  localStorage.setItem("jr_admin_token", token);
+  document.getElementById("login-error").textContent = "";
+  loadAll();
+}
+document.getElementById("pwd-input").addEventListener("keydown", e => { if (e.key === "Enter") doLogin(); });
+
+function logout() {
+  token = ""; localStorage.removeItem("jr_admin_token");
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("pwd-input").value = "";
+}
+
+// Auto-login if token exists
+if (token) loadAll();
+
+// ── API helper ────────────────────────────────────────────────────────────────
+async function api(url, opts = {}) {
+  const res = await fetch(url, {
+    ...opts,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
+      "x-admin-password": document.getElementById("pwd-input")?.value || "",
+      ...(opts.headers || {}),
+    },
+  });
+  if (res.status === 401) { logout(); return res; }
+  return res;
+}
+
+// ── Load all ──────────────────────────────────────────────────────────────────
+async function loadAll() {
+  const [sR, bR, eR, cR, qR, pR, gR] = await Promise.all([
+    api("/api/admin/stats"), api("/api/bookings"),
+    api("/api/enquiries"),   api("/api/contacts"),
+    api("/api/quick-checks"),api("/api/payments"),
+    fetch("/api/gallery"),
+  ]);
+  if (sR.status === 401) return;
+
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+
+  const [stats, bookings, enquiries, contacts, checks, payments, gallery] = await Promise.all([
+    sR.json(), bR.json(), eR.json(), cR.json(), qR.json(), pR.json(), gR.json()
+  ]);
+
+  allBookings = bookings;
+  renderStats(stats);
+  renderBookings(bookings);
+  renderEnquiries(enquiries);
+  renderContacts(contacts);
+  renderChecks(checks);
+  renderPayments(payments);
+  renderGallery(gallery);
+
+  document.getElementById("tb-b").textContent = stats.pendingBookings;
+  document.getElementById("tb-e").textContent = stats.newEnquiries;
+  document.getElementById("tb-c").textContent = stats.unreadContacts;
+  document.getElementById("tb-q").textContent = stats.totalQuickChecks;
+  document.getElementById("tb-p").textContent = stats.totalPayments;
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function renderStats(s) {
+  const rev = s.totalRevenue ? "₹" + s.totalRevenue.toLocaleString("en-IN") : "₹0";
+  document.getElementById("stats-grid").innerHTML = `
+    <div class="sc"><div class="si">📋</div><div class="sl">Total Bookings</div><div class="sv">${s.totalBookings}</div></div>
+    <div class="sc"><div class="si">⏳</div><div class="sl">Pending</div><div class="sv">${s.pendingBookings}</div></div>
+    <div class="sc"><div class="si">✅</div><div class="sl">Confirmed</div><div class="sv">${s.confirmedBookings}</div></div>
+    <div class="sc"><div class="si">💬</div><div class="sl">Enquiries</div><div class="sv">${s.totalEnquiries}</div></div>
+    <div class="sc"><div class="si">📩</div><div class="sl">Messages</div><div class="sv">${s.totalContacts}</div></div>
+    <div class="sc"><div class="si">💰</div><div class="sl">Revenue</div><div class="sv" style="font-size:1.2rem">${rev}</div></div>
+  `;
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-" + name).classList.add("active");
+  btn.classList.add("active");
+}
+
+// ── Bookings ──────────────────────────────────────────────────────────────────
+function filterBookings() {
+  const s = document.getElementById("bk-search").value.toLowerCase();
+  const st = document.getElementById("bk-status").value;
+  let list = allBookings;
+  if (st !== "all") list = list.filter(b => b.status === st);
+  if (s) list = list.filter(b =>
+    b.fullName.toLowerCase().includes(s) || b.phone.includes(s) || (b.email||"").toLowerCase().includes(s)
+  );
+  renderBookings(list);
+}
+
+function renderBookings(list) {
+  document.getElementById("bk-cnt").textContent = list.length + " records";
+  const tb = document.getElementById("bk-body");
+  if (!list.length) { tb.innerHTML = `<tr class="er"><td colspan="12">No bookings found.</td></tr>`; return; }
+  tb.innerHTML = list.map(b => `
+    <tr>
+      <td><b>${esc(b.fullName)}</b></td>
+      <td><a href="tel:${esc(b.phone)}" style="color:#f2c14f">${esc(b.phone)}</a></td>
+      <td style="font-size:0.77rem">${esc(b.email||"—")}</td>
+      <td>${b.arrival}</td><td>${b.departure}</td>
+      <td>${b.adults}A ${b.children&&b.children!=="0"?b.children+"C":""}</td>
+      <td style="font-size:0.77rem">${esc(stayLabel(b.stayType))}</td>
+      <td><span class="badge ${b.status}">${b.status}</span></td>
+      <td><span class="badge ${b.paymentStatus||'unpaid'}">${b.paymentStatus||"unpaid"}</span></td>
+      <td><input class="ni" value="${esc(b.notes||"")}" placeholder="Note…" onblur="saveNote('${b._id}',this.value)" /></td>
+      <td style="font-size:0.76rem;white-space:nowrap">${fmtDate(b.createdAt)}</td>
+      <td>
+        <div class="acts">
+          <button class="ab ok" onclick="updBooking('${b._id}','confirmed')">✓</button>
+          <button class="ab" onclick="updBooking('${b._id}','cancelled')">✗</button>
+          <button class="ab del" onclick="delBooking('${b._id}')">🗑</button>
+        </div>
+      </td>
+    </tr>`).join("");
+}
+
+async function updBooking(id, status) {
+  await api(`/api/bookings/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
+  loadAll();
+}
+async function saveNote(id, notes) {
+  await api(`/api/bookings/${id}`, { method: "PATCH", body: JSON.stringify({ notes }) });
+}
+async function delBooking(id) {
+  if (!confirm("Delete this booking?")) return;
+  await api(`/api/bookings/${id}`, { method: "DELETE" });
+  loadAll();
+}
+
+// ── Enquiries ─────────────────────────────────────────────────────────────────
+function renderEnquiries(list) {
+  document.getElementById("enq-cnt").textContent = list.length + " records";
+  const tb = document.getElementById("enq-body");
+  if (!list.length) { tb.innerHTML = `<tr class="er"><td colspan="9">No enquiries yet.</td></tr>`; return; }
+  tb.innerHTML = list.map(e => `
+    <tr>
+      <td><b>${esc(e.name)}</b></td>
+      <td><a href="tel:${esc(e.phone)}" style="color:#f2c14f">${esc(e.phone)}</a></td>
+      <td>${esc(e.eventType||"—")}</td><td>${e.eventDate||"—"}</td><td>${e.guests||"—"}</td>
+      <td><div class="msg-short" title="${esc(e.message)}">${esc(e.message||"—")}</div></td>
+      <td><span class="badge ${e.status||'new'}">${e.status||"new"}</span></td>
+      <td style="font-size:0.76rem;white-space:nowrap">${fmtDate(e.createdAt)}</td>
+      <td><div class="acts">
+        <button class="ab ok" onclick="updEnquiry('${e._id}','done')">Done</button>
+        <button class="ab del" onclick="delEnquiry('${e._id}')">🗑</button>
+      </div></td>
+    </tr>`).join("");
+}
+async function updEnquiry(id, status) {
+  await api(`/api/enquiries/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
+  loadAll();
+}
+async function delEnquiry(id) {
+  if (!confirm("Delete?")) return;
+  await api(`/api/enquiries/${id}`, { method: "DELETE" });
+  loadAll();
+}
+
+// ── Contacts ──────────────────────────────────────────────────────────────────
+function renderContacts(list) {
+  document.getElementById("ct-cnt").textContent = list.length + " records";
+  const tb = document.getElementById("ct-body");
+  if (!list.length) { tb.innerHTML = `<tr class="er"><td colspan="7">No messages yet.</td></tr>`; return; }
+  tb.innerHTML = list.map(c => `
+    <tr>
+      <td><b>${esc(c.name)}</b></td>
+      <td><a href="tel:${esc(c.phone)}" style="color:#f2c14f">${esc(c.phone)}</a></td>
+      <td>${esc(c.subject||"—")}</td>
+      <td><div class="msg-short" title="${esc(c.message)}">${esc(c.message)}</div></td>
+      <td><span class="badge ${c.read?'read':'unread'}">${c.read?"Read":"Unread"}</span></td>
+      <td style="font-size:0.76rem;white-space:nowrap">${fmtDate(c.createdAt)}</td>
+      <td><div class="acts">
+        ${!c.read?`<button class="ab" onclick="markRead('${c._id}')">Mark Read</button>`:""}
+        <button class="ab del" onclick="delContact('${c._id}')">🗑</button>
+      </div></td>
+    </tr>`).join("");
+}
+async function markRead(id) {
+  await api(`/api/contacts/${id}`, { method: "PATCH" });
+  loadAll();
+}
+async function delContact(id) {
+  if (!confirm("Delete?")) return;
+  await api(`/api/contacts/${id}`, { method: "DELETE" });
+  loadAll();
+}
+
+// ── Quick Checks ──────────────────────────────────────────────────────────────
+function renderChecks(list) {
+  const tb = document.getElementById("qc-body");
+  if (!list.length) { tb.innerHTML = `<tr class="er"><td colspan="5">No quick checks yet.</td></tr>`; return; }
+  tb.innerHTML = list.map(c => `
+    <tr><td>${c.checkin}</td><td>${c.checkout}</td><td>${c.guests}</td><td>${esc(c.roomType||"—")}</td><td style="font-size:0.76rem">${fmtDate(c.createdAt)}</td></tr>
+  `).join("");
+}
+
+// ── Payments ──────────────────────────────────────────────────────────────────
+function renderPayments(list) {
+  const tb = document.getElementById("pay-body");
+  if (!list.length) { tb.innerHTML = `<tr class="er"><td colspan="6">No payments yet.</td></tr>`; return; }
+  tb.innerHTML = list.map(p => `
+    <tr>
+      <td style="font-size:0.75rem">${esc(p.orderId)}</td>
+      <td style="font-size:0.75rem">${esc(p.bookingId||"—")}</td>
+      <td>₹${(p.amount||0).toLocaleString("en-IN")}</td>
+      <td>${p.currency||"INR"}</td>
+      <td><span class="badge ${p.status==='paid'?'paid':'unpaid'}">${p.status}</span></td>
+      <td style="font-size:0.76rem">${fmtDate(p.createdAt)}</td>
+    </tr>`).join("");
+}
+
+// ── Gallery ───────────────────────────────────────────────────────────────────
+function renderGallery(list) {
+  const grid = document.getElementById("gal-grid");
+  if (!list.length) { grid.innerHTML = `<p style="color:rgba(245,245,245,0.4);font-size:0.85rem;margin-top:1rem">No images uploaded yet.</p>`; return; }
+  grid.innerHTML = list.map(img => `
+    <div class="gal-item">
+      <img src="${img.url}" alt="${esc(img.alt)}" loading="lazy" />
+      <button class="gal-del" onclick="delGallery('${img._id}')">✕</button>
+    </div>`).join("");
+}
+
+async function uploadImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById("upload-status");
+  status.textContent = "Uploading…";
+  const fd = new FormData();
+  fd.append("image", file);
+  fd.append("alt", file.name.replace(/\.[^.]+$/, ""));
+  const res = await fetch("/api/admin/gallery", {
+    method: "POST",
+    headers: { "Authorization": "Bearer " + token },
+    body: fd,
+  });
+  const data = await res.json();
+  status.textContent = data.success ? "Uploaded!" : (data.message || "Upload failed.");
+  status.style.color = data.success ? "#9ae6b4" : "#feb2b2";
+  input.value = "";
+  if (data.success) loadAll();
+}
+
+async function delGallery(id) {
+  if (!confirm("Delete this image?")) return;
+  await api(`/api/admin/gallery/${id}`, { method: "DELETE" });
+  loadAll();
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+async function changePassword() {
+  const np = document.getElementById("new-pwd").value;
+  const cp = document.getElementById("confirm-pwd").value;
+  const msg = document.getElementById("pwd-msg");
+  if (np.length < 6) { msg.style.color = "#feb2b2"; msg.textContent = "Min 6 characters required."; return; }
+  if (np !== cp)     { msg.style.color = "#feb2b2"; msg.textContent = "Passwords do not match."; return; }
+  const res  = await api("/api/admin/change-password", { method: "POST", body: JSON.stringify({ newPassword: np }) });
+  const data = await res.json();
+  msg.style.color = data.success ? "#9ae6b4" : "#feb2b2";
+  msg.textContent = data.message;
+  if (data.success) { document.getElementById("new-pwd").value = ""; document.getElementById("confirm-pwd").value = ""; }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function fmtDate(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" });
+}
+function stayLabel(v) {
+  const m = { "couple-stay":"Couple Stay","couple":"Couple","birthday":"Birthday","meeting":"Meeting",
+    "small-event":"Small Event","marriage":"Marriage","entire-hotel":"Entire Hotel" };
+  return m[v] || v || "—";
+}
+</script>
+</body>
+</html>
