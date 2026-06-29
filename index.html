@@ -26,6 +26,7 @@
                 <a href="#gallery" onclick="closeMenu()">Gallery</a>
                 <a href="#booking" onclick="closeMenu()">Book</a>
                 <a href="#contact" onclick="closeMenu()">Contact</a>
+                <a href="#location" onclick="closeMenu()">Location</a>
             </nav>
             <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
                 <span></span><span></span><span></span>
@@ -34,7 +35,7 @@
     </header>
 
     <!-- WhatsApp Floating Button -->
-    <a href="https://wa.me/91XXXXXXXXXX?text=Hello%2C%20I%20want%20to%20enquire%20about%20booking%20at%20Jawai%20Rajat%20Hotel."
+    <a href="https://wa.me/919256208646?text=Hello%2C%20I%20want%20to%20enquire%20about%20booking%20at%20Jawai%20Rajat%20Hotel."
        class="whatsapp-float" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
         <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
@@ -45,7 +46,10 @@
         <section id="hero" class="hero">
             <div class="hero-overlay"></div>
             <div class="container hero-content">
-                <div>
+                <div class="hero-inner">
+                    <div class="hero-logo">
+                        <img src="Logo.jpg" alt="Jawai Rajat Hotel Logo" />
+                    </div>
                     <p class="eyebrow">Premium Hotel & Event Destination</p>
                     <h1>Celebrate Your Special Moments at Jawai Rajat</h1>
                     <p class="subtitle">
@@ -74,43 +78,7 @@
                     </div>
                 </div>
 
-                <form id="quick-booking" class="quick-booking">
-                    <h2>Quick booking</h2>
-                    <div class="field-group">
-                        <label for="checkin">Check‑in</label>
-                        <input type="date" id="checkin" name="checkin" required />
-                    </div>
-                    <div class="field-group">
-                        <label for="checkout">Check‑out</label>
-                        <input type="date" id="checkout" name="checkout" required />
-                    </div>
-                    <div class="field-row">
-                        <div class="field-group">
-                            <label for="guests">Guests</label>
-                            <select id="guests" name="guests" required>
-                                <option value="" disabled selected>Select</option>
-                                <option value="1">1 Guest</option>
-                                <option value="2">2 Guests</option>
-                                <option value="3">3 Guests</option>
-                                <option value="4">4 Guests</option>
-                                <option value="5+">5+ Guests</option>
-                            </select>
-                        </div>
-                        <div class="field-group">
-                            <label for="room-type">Room type</label>
-                            <select id="room-type" name="roomType" required>
-                                <option value="" disabled selected>Select</option>
-                                <option value="couple-stay">Couple Stay</option>
-                                <option value="birthday">Birthday / Celebration</option>
-                                <option value="meeting">Meeting / Small Event</option>
-                                <option value="marriage">Marriage / Wedding</option>
-                                <option value="entire-hotel">Entire Hotel Booking</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn primary full-width">Check availability</button>
-                    <p class="form-note" id="quick-status"></p>
-                </form>
+
             </div>
         </section>
 
@@ -153,7 +121,7 @@
                             <li>Candle-light dinner option</li>
                             <li>Couple photography setup</li>
                         </ul>
-                        <p class="price">From ₹4,500 / night</p>
+                        <p class="price">From ₹1,999 / night</p>
                         <a href="#booking" class="btn primary card-btn">Book Now</a>
                     </article>
                     <article class="card">
@@ -168,7 +136,7 @@
                             <li>Projector & meeting setup</li>
                             <li>Custom catering menu</li>
                         </ul>
-                        <p class="price">From ₹8,000 / event</p>
+                        <p class="price">From ₹9,999 / event</p>
                         <a href="#booking" class="btn primary card-btn">Book Now</a>
                     </article>
                     <article class="card">
@@ -241,10 +209,10 @@
                     <!-- Static fallback images (shown until dynamic loads) -->
                     <div class="gallery-item"><img src="Hotel1.webp" alt="Exterior view of Jawai Rajat Hotel" /></div>
                     <div class="gallery-item"><img src="Hotel_insideside.webp" alt="Hotel interior view" /></div>
-                    <div class="gallery-item"><img src="Bedroom.webp" alt="Luxury bedroom at Jawai Rajat" /></div>
-                    <div class="gallery-item"><img src="Room_full_view.webp" alt="Full room view at Jawai Rajat" /></div>
                     <div class="gallery-item"><img src="Interior.webp" alt="Interior of Jawai Rajat Hotel" /></div>
-                    <div class="gallery-item"><img src="Bedroom.webp" alt="Premium room at Jawai Rajat" /></div>
+                    <div class="gallery-item"><img src="Room_full_view.webp" alt="Full room view at Jawai Rajat" /></div>
+                    <div class="gallery-item"><img src="Bedroom.webp" alt="Luxury bedroom at Jawai Rajat" /></div>
+                    <div class="gallery-item"><img src="cool1.jpg" alt="Jawai Rajat Hotel" /></div>
                 </div>
             </div>
         </section>
@@ -259,7 +227,7 @@
                     </p>
                     <div class="info-box">
                         <p><strong>Direct reservations</strong></p>
-                        <p>Phone: +91‑XXXXXXXXXX</p>
+                        <p>Phone: +91‑9256208646</p>
                         <p>Email: reservations@jawai-rajat.com</p>
                     </div>
                 </div>
@@ -358,9 +326,9 @@
                     <p>Have a question or want to plan an event? Send us a message and we'll get back to you quickly.</p>
                     <ul class="contact-list">
                         <li>📍 Jalore Road, Takhatgarh, Rajasthan 306912</li>
-                        <li>📞 Phone / WhatsApp: +91‑XXXXXXXXXX</li>
+                        <li>📞 Phone / WhatsApp: +91‑9256208646</li>
                         <li>✉️ Email: stay@jawai-rajat.com</li>
-                        <li>📸 Instagram: @jawai.rajat</li>
+                        <li>📸 Instagram: <a href="https://www.instagram.com/jawai_rajat_hotel" target="_blank" rel="noopener" style="color:#f2c14f">@jawai_rajat_hotel</a></li>
                     </ul>
                     <div class="info-box" style="margin-top:1.4rem">
                         <p><strong>How to reach us</strong></p>
@@ -394,6 +362,82 @@
             </div>
         </section>
     </main>
+
+    <!-- LOCATION SECTION -->
+    <section id="location" class="location-section">
+        <div class="container">
+            <div class="location-header">
+                <p class="eyebrow" style="color:#c8a84b">Our Location</p>
+                <h2 class="location-title">Find Us on Google Maps</h2>
+                <p class="location-subtitle">RAJAT HOTEL &amp; RESTAURANT is conveniently located on NH-325 near King Muthaliya Resort, Takhatgarh, making it easily accessible for travelers and families.</p>
+            </div>
+
+            <div class="location-layout">
+                <!-- Map -->
+                <div class="map-container">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3571.0!2d73.0!3d25.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sJAWAI+RAJAT+HOTEL+TAKHATGARH%2C+Rajat+hotel%2C+Takhatgarh%2C+Rajasthan+306912!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                        width="100%"
+                        height="100%"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Rajat Hotel & Restaurant Location on Google Maps">
+                    </iframe>
+                </div>
+
+                <!-- Location Card -->
+                <div class="location-card">
+                    <div class="lc-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" width="36" height="36">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#c8a84b"/>
+                            <circle cx="12" cy="9" r="2.5" fill="#1a1a1a"/>
+                        </svg>
+                    </div>
+                    <h3 class="lc-name">RAJAT HOTEL &amp; RESTAURANT</h3>
+                    <p class="lc-address">
+                        <span class="lc-addr-line">683, NH 325, Near King Muthaliya Resort,</span>
+                        <span class="lc-addr-line">Takhatgarh, Rajasthan, India</span>
+                    </p>
+
+                    <div class="lc-divider"></div>
+
+                    <div class="lc-info-row">
+                        <svg viewBox="0 0 24 24" fill="none" width="16" height="16" style="flex-shrink:0">
+                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="#c8a84b"/>
+                        </svg>
+                        <span>+91-9256208646</span>
+                    </div>
+                    <div class="lc-info-row">
+                        <svg viewBox="0 0 24 24" fill="none" width="16" height="16" style="flex-shrink:0">
+                            <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" fill="#c8a84b"/>
+                        </svg>
+                        <span>stay@jawai-rajat.com</span>
+                    </div>
+
+                    <div class="lc-divider"></div>
+
+                    <div class="lc-btns">
+                        <a href="https://www.google.com/maps/search/JAWAI+RAJAT+HOTEL+TAKHATGARH+Rajasthan+306912"
+                           target="_blank" rel="noopener" class="lc-btn lc-btn-primary">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
+                            Open in Google Maps
+                        </a>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=JAWAI+RAJAT+HOTEL+TAKHATGARH+Rajasthan+306912"
+                           target="_blank" rel="noopener" class="lc-btn lc-btn-ghost">
+                            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                                <path d="M21.71 11.29l-9-9a1 1 0 00-1.42 0l-9 9a1 1 0 000 1.42l9 9a1 1 0 001.42 0l9-9a1 1 0 000-1.42zM14 14.5V12h-4v3H8v-4a1 1 0 011-1h5V7.5l3.5 3.5-3.5 3.5z"/>
+                            </svg>
+                            Get Directions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <footer class="footer">
         <div class="container footer-content">

@@ -192,8 +192,6 @@
       <button class="tab-btn active" onclick="switchTab('bookings',this)">Bookings <span class="tbadge" id="tb-b">0</span></button>
       <button class="tab-btn" onclick="switchTab('enquiries',this)">Enquiries <span class="tbadge" id="tb-e">0</span></button>
       <button class="tab-btn" onclick="switchTab('contacts',this)">Messages <span class="tbadge" id="tb-c">0</span></button>
-      <button class="tab-btn" onclick="switchTab('quickchecks',this)">Quick Checks <span class="tbadge" id="tb-q">0</span></button>
-      <button class="tab-btn" onclick="switchTab('payments',this)">Payments <span class="tbadge" id="tb-p">0</span></button>
       <button class="tab-btn" onclick="switchTab('gallery',this)">Gallery</button>
       <button class="tab-btn" onclick="switchTab('settings',this)">Settings</button>
     </div>
@@ -212,7 +210,7 @@
       </div>
       <div class="tw">
         <table>
-          <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Arrival</th><th>Departure</th><th>Guests</th><th>Type</th><th>Status</th><th>Payment</th><th>Notes</th><th>Date</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Arrival</th><th>Departure</th><th>Guests</th><th>Type</th><th>Status</th><th>Notes</th><th>Date</th><th>Actions</th></tr></thead>
           <tbody id="bk-body"></tbody>
         </table>
       </div>
@@ -236,26 +234,6 @@
         <table>
           <thead><tr><th>Name</th><th>Phone</th><th>Subject</th><th>Message</th><th>Status</th><th>Received</th><th>Actions</th></tr></thead>
           <tbody id="ct-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- QUICK CHECKS -->
-    <div class="tab-panel" id="tab-quickchecks">
-      <div class="tw">
-        <table>
-          <thead><tr><th>Check-in</th><th>Check-out</th><th>Guests</th><th>Type</th><th>Time</th></tr></thead>
-          <tbody id="qc-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- PAYMENTS -->
-    <div class="tab-panel" id="tab-payments">
-      <div class="tw">
-        <table>
-          <thead><tr><th>Order ID</th><th>Booking ID</th><th>Amount</th><th>Currency</th><th>Status</th><th>Date</th></tr></thead>
-          <tbody id="pay-body"></tbody>
         </table>
       </div>
     </div>
@@ -335,10 +313,9 @@ async function api(url, opts = {}) {
 
 // ── Load all ──────────────────────────────────────────────────────────────────
 async function loadAll() {
-  const [sR, bR, eR, cR, qR, pR, gR] = await Promise.all([
+  const [sR, bR, eR, cR, gR] = await Promise.all([
     api("/api/admin/stats"), api("/api/bookings"),
     api("/api/enquiries"),   api("/api/contacts"),
-    api("/api/quick-checks"),api("/api/payments"),
     fetch("/api/gallery"),
   ]);
   if (sR.status === 401) return;
@@ -346,8 +323,8 @@ async function loadAll() {
   document.getElementById("login-screen").style.display = "none";
   document.getElementById("dashboard").style.display = "block";
 
-  const [stats, bookings, enquiries, contacts, checks, payments, gallery] = await Promise.all([
-    sR.json(), bR.json(), eR.json(), cR.json(), qR.json(), pR.json(), gR.json()
+  const [stats, bookings, enquiries, contacts, gallery] = await Promise.all([
+    sR.json(), bR.json(), eR.json(), cR.json(), gR.json()
   ]);
 
   allBookings = bookings;
@@ -355,27 +332,21 @@ async function loadAll() {
   renderBookings(bookings);
   renderEnquiries(enquiries);
   renderContacts(contacts);
-  renderChecks(checks);
-  renderPayments(payments);
   renderGallery(gallery);
 
   document.getElementById("tb-b").textContent = stats.pendingBookings;
   document.getElementById("tb-e").textContent = stats.newEnquiries;
   document.getElementById("tb-c").textContent = stats.unreadContacts;
-  document.getElementById("tb-q").textContent = stats.totalQuickChecks;
-  document.getElementById("tb-p").textContent = stats.totalPayments;
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 function renderStats(s) {
-  const rev = s.totalRevenue ? "₹" + s.totalRevenue.toLocaleString("en-IN") : "₹0";
   document.getElementById("stats-grid").innerHTML = `
     <div class="sc"><div class="si">📋</div><div class="sl">Total Bookings</div><div class="sv">${s.totalBookings}</div></div>
     <div class="sc"><div class="si">⏳</div><div class="sl">Pending</div><div class="sv">${s.pendingBookings}</div></div>
     <div class="sc"><div class="si">✅</div><div class="sl">Confirmed</div><div class="sv">${s.confirmedBookings}</div></div>
     <div class="sc"><div class="si">💬</div><div class="sl">Enquiries</div><div class="sv">${s.totalEnquiries}</div></div>
     <div class="sc"><div class="si">📩</div><div class="sl">Messages</div><div class="sv">${s.totalContacts}</div></div>
-    <div class="sc"><div class="si">💰</div><div class="sl">Revenue</div><div class="sv" style="font-size:1.2rem">${rev}</div></div>
   `;
 }
 
@@ -412,7 +383,6 @@ function renderBookings(list) {
       <td>${b.adults}A ${b.children&&b.children!=="0"?b.children+"C":""}</td>
       <td style="font-size:0.77rem">${esc(stayLabel(b.stayType))}</td>
       <td><span class="badge ${b.status}">${b.status}</span></td>
-      <td><span class="badge ${b.paymentStatus||'unpaid'}">${b.paymentStatus||"unpaid"}</span></td>
       <td><input class="ni" value="${esc(b.notes||"")}" placeholder="Note…" onblur="saveNote('${b._id}',this.value)" /></td>
       <td style="font-size:0.76rem;white-space:nowrap">${fmtDate(b.createdAt)}</td>
       <td>
@@ -494,30 +464,6 @@ async function delContact(id) {
   if (!confirm("Delete?")) return;
   await api(`/api/contacts/${id}`, { method: "DELETE" });
   loadAll();
-}
-
-// ── Quick Checks ──────────────────────────────────────────────────────────────
-function renderChecks(list) {
-  const tb = document.getElementById("qc-body");
-  if (!list.length) { tb.innerHTML = `<tr class="er"><td colspan="5">No quick checks yet.</td></tr>`; return; }
-  tb.innerHTML = list.map(c => `
-    <tr><td>${c.checkin}</td><td>${c.checkout}</td><td>${c.guests}</td><td>${esc(c.roomType||"—")}</td><td style="font-size:0.76rem">${fmtDate(c.createdAt)}</td></tr>
-  `).join("");
-}
-
-// ── Payments ──────────────────────────────────────────────────────────────────
-function renderPayments(list) {
-  const tb = document.getElementById("pay-body");
-  if (!list.length) { tb.innerHTML = `<tr class="er"><td colspan="6">No payments yet.</td></tr>`; return; }
-  tb.innerHTML = list.map(p => `
-    <tr>
-      <td style="font-size:0.75rem">${esc(p.orderId)}</td>
-      <td style="font-size:0.75rem">${esc(p.bookingId||"—")}</td>
-      <td>₹${(p.amount||0).toLocaleString("en-IN")}</td>
-      <td>${p.currency||"INR"}</td>
-      <td><span class="badge ${p.status==='paid'?'paid':'unpaid'}">${p.status}</span></td>
-      <td style="font-size:0.76rem">${fmtDate(p.createdAt)}</td>
-    </tr>`).join("");
 }
 
 // ── Gallery ───────────────────────────────────────────────────────────────────

@@ -13,6 +13,7 @@ const nodemailer = require("nodemailer");
 const jwt        = require("jsonwebtoken");
 const multer     = require("multer");
 const crypto     = require("crypto");
+const Datastore  = require("nedb-promises");
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -21,22 +22,77 @@ const JWT_SECRET     = process.env.JWT_SECRET     || "secret_change_me";
 
 // ─── Directories ──────────────────────────────────────────────────────────────
 const UPLOADS_DIR = path.join(__dirname, "uploads");
+const DATA_DIR    = path.join(__dirname, "data");
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+if (!fs.existsSync(DATA_DIR))    fs.mkdirSync(DATA_DIR,    { recursive: true });
+
+// ─── NeDB local databases (fallback when MongoDB is unavailable) ──────────────
+const localDb = {
+  bookings:    Datastore.create({ filename: path.join(DATA_DIR, "bookings.db"),    autoload: true }),
+  contacts:    Datastore.create({ filename: path.join(DATA_DIR, "contacts.db"),    autoload: true }),
+  enquiries:   Datastore.create({ filename: path.join(DATA_DIR, "enquiries.db"),   autoload: true }),
+  quickchecks: Datastore.create({ filename: path.join(DATA_DIR, "quickchecks.db"), autoload: true }),
+  payments:    Datastore.create({ filename: path.join(DATA_DIR, "payments.db"),    autoload: true }),
+  gallery:     Datastore.create({ filename: path.join(DATA_DIR, "gallery.db"),     autoload: true }),
+};
 
 // ─── MongoDB Connection ───────────────────────────────────────────────────────
-const MONGODB_URI = process.env.MONGODB_URI;
+let mongoConnected = false;
+const MONGODB_URI  = process.env.MONGODB_URI;
 
-if (!MONGODB_URI || MONGODB_URI.includes("username:password")) {
-  console.error("\n  ❌  MONGODB_URI not set in .env — please add your Atlas connection string.\n");
-  process.exit(1);
+if (MONGODB_URI && !MONGODB_URI.includes("username:password")) {
+  mongoose.connect(MONGODB_URI, {
+    serverSelectionTimeoutMS: 15000,
+    socketTimeoutMS: 45000,
+  })
+    .then(() => { mongoConnected = true; console.log("  ✅  MongoDB Atlas connected"); })
+    .catch(err => {
+      console.error("  ❌  MongoDB connection failed:", err.message);
+      console.warn("  ⚠️   Using local NeDB databases (data/ folder)\n");
+    });
+} else {
+  console.warn("  ⚠️   MONGODB_URI not set — using local NeDB databases (data/ folder)\n");
 }
 
-mongoose.connect(MONGODB_URI, {
-  serverSelectionTimeoutMS: 15000,
-  socketTimeoutMS: 45000,
-})
-  .then(() => console.log("  ✅  MongoDB Atlas connected"))
-  .catch(err => { console.error("  ❌  MongoDB connection failed:", err.message); process.exit(1); });
+// ─── DB helpers: use Mongo if connected, else NeDB ───────────────────────────
+function ts() { return { createdAt: new Date(), updatedAt: new Date() }; }
+
+const db = {
+  bookings: {
+    create: (d) => mongoConnected ? Booking.create(d) : localDb.bookings.insert({ ...d, ...ts() }),
+    find:   (q) => mongoConnected ? Booking.find(q||{}).sort({ createdAt: -1 }) : localDb.bookings.find(q||{}).sort({ createdAt: -1 }),
+    findById:        (id) => mongoConnected ? Booking.findById(id) : localDb.bookings.findOne({ _id: id }),
+    findByIdAndUpdate: (id, u) => mongoConnected ? Booking.findByIdAndUpdate(id, u) : localDb.bookings.update({ _id: id }, { $set: { ...u, updatedAt: new Date() } }),
+    findByIdAndDelete: (id)    => mongoConnected ? Booking.findByIdAndDelete(id) : localDb.bookings.remove({ _id: id }),
+  },
+  contacts: {
+    create: (d) => mongoConnected ? Contact.create(d) : localDb.contacts.insert({ ...d, read: false, ...ts() }),
+    find:   (q) => mongoConnected ? Contact.find(q||{}).sort({ createdAt: -1 }) : localDb.contacts.find(q||{}).sort({ createdAt: -1 }),
+    findByIdAndUpdate: (id, u) => mongoConnected ? Contact.findByIdAndUpdate(id, u) : localDb.contacts.update({ _id: id }, { $set: u }),
+    findByIdAndDelete: (id)    => mongoConnected ? Contact.findByIdAndDelete(id) : localDb.contacts.remove({ _id: id }),
+  },
+  enquiries: {
+    create: (d) => mongoConnected ? Enquiry.create(d) : localDb.enquiries.insert({ ...d, status: d.status||"new", ...ts() }),
+    find:   (q) => mongoConnected ? Enquiry.find(q||{}).sort({ createdAt: -1 }) : localDb.enquiries.find(q||{}).sort({ createdAt: -1 }),
+    findByIdAndUpdate: (id, u) => mongoConnected ? Enquiry.findByIdAndUpdate(id, u) : localDb.enquiries.update({ _id: id }, { $set: u }),
+    findByIdAndDelete: (id)    => mongoConnected ? Enquiry.findByIdAndDelete(id) : localDb.enquiries.remove({ _id: id }),
+  },
+  quickchecks: {
+    create: (d) => mongoConnected ? QuickCheck.create(d) : localDb.quickchecks.insert({ ...d, ...ts() }),
+    find:   (q) => mongoConnected ? QuickCheck.find(q||{}).sort({ createdAt: -1 }) : localDb.quickchecks.find(q||{}).sort({ createdAt: -1 }),
+  },
+  payments: {
+    create: (d) => mongoConnected ? Payment.create(d) : localDb.payments.insert({ ...d, ...ts() }),
+    find:   (q) => mongoConnected ? Payment.find(q||{}) : localDb.payments.find(q||{}),
+    findOneAndUpdate: (q, u) => mongoConnected ? Payment.findOneAndUpdate(q, u) : localDb.payments.update(q, { $set: u }),
+  },
+  gallery: {
+    create: (d) => mongoConnected ? Gallery.create(d) : localDb.gallery.insert({ ...d, ...ts() }),
+    find:   (q) => mongoConnected ? Gallery.find(q||{}).sort({ order: 1, createdAt: -1 }) : localDb.gallery.find(q||{}).sort({ order: 1, createdAt: -1 }),
+    findById:        (id) => mongoConnected ? Gallery.findById(id) : localDb.gallery.findOne({ _id: id }),
+    findByIdAndDelete: (id) => mongoConnected ? Gallery.findByIdAndDelete(id) : localDb.gallery.remove({ _id: id }),
+  },
+};
 
 // ─── Schemas & Models ─────────────────────────────────────────────────────────
 const bookingSchema = new mongoose.Schema({
@@ -143,7 +199,7 @@ function bookingEmailHtml(b, forCustomer = false) {
         <tr><td style="padding:5px 0;color:#aaa">Type</td><td>${b.stayType || "—"}</td></tr>
         ${b.message ? `<tr><td style="padding:5px 0;color:#aaa">Message</td><td>${b.message}</td></tr>` : ""}
       </table>
-      ${forCustomer ? `<p style="margin-top:20px">📞 +91-XXXXXXXXXX &nbsp;|&nbsp; ✉️ stay@jawai-rajat.com</p>` : ""}
+      ${forCustomer ? `<p style="margin-top:20px">📞 +91-9256208646 &nbsp;|&nbsp; ✉️ stay@jawai-rajat.com</p>` : ""}
     </div>
   </div>`;
 }
@@ -185,7 +241,7 @@ function validateBooking(b) {
   if (!b.email   || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.email.trim())) e.push("Valid email required.");
   if (!b.arrival)                                                 e.push("Arrival date required.");
   if (!b.departure)                                               e.push("Departure date required.");
-  if (b.arrival && b.departure && b.arrival >= b.departure)       e.push("Departure must be after arrival.");
+  if (b.arrival && b.departure && b.arrival > b.departure)       e.push("Departure must be same as or after arrival.");
   if (!b.adults)                                                  e.push("Adults count required.");
   return e;
 }
@@ -231,11 +287,11 @@ app.post("/api/booking", apiLimiter, async (req, res) => {
   if (errors.length) return res.status(400).json({ success: false, message: errors.join(" ") });
   try {
     const b = req.body;
-    const doc = await Booking.create({
+    const doc = await db.bookings.create({
       fullName: b.fullName.trim(), phone: b.phone.trim(), email: b.email.trim(),
       city: (b.city||"").trim(), arrival: b.arrival, departure: b.departure,
       adults: b.adults, children: b.children||"0", stayType: b.stayType||"",
-      message: (b.message||"").trim(),
+      message: (b.message||"").trim(), status: "pending", notes: "", paymentStatus: "unpaid",
     });
     sendEmail(process.env.NOTIFY_EMAIL, `New Booking – ${b.fullName}`, bookingEmailHtml(b, false));
     if (b.email) sendEmail(b.email, "Booking Request Received – Jawai Rajat", bookingEmailHtml(b, true));
@@ -249,7 +305,7 @@ app.post("/api/booking", apiLimiter, async (req, res) => {
 app.post("/api/quick-check", apiLimiter, async (req, res) => {
   try {
     const { checkin, checkout, guests, roomType } = req.body;
-    await QuickCheck.create({ checkin, checkout, guests, roomType });
+    await db.quickchecks.create({ checkin, checkout, guests, roomType });
     res.json({ success: true, message: "Dates saved! Please fill the booking form below." });
   } catch (err) { res.status(500).json({ success: false, message: "Something went wrong." }); }
 });
@@ -259,24 +315,24 @@ app.post("/api/contact", apiLimiter, async (req, res) => {
   if (!name || !phone || !message)
     return res.status(400).json({ success: false, message: "Name, phone and message are required." });
   try {
-    await Contact.create({ name: name.trim(), phone: phone.trim(), email: (email||"").trim(), subject: (subject||"").trim(), message: message.trim() });
+    await db.contacts.create({ name: name.trim(), phone: phone.trim(), email: (email||"").trim(), subject: (subject||"").trim(), message: message.trim() });
     sendEmail(process.env.NOTIFY_EMAIL, `Contact: ${name}`, `<p><b>${name}</b> (${phone}): ${message}</p>`);
     res.json({ success: true, message: "Message sent! We will get back to you soon." });
-  } catch (err) { res.status(500).json({ success: false, message: "Failed to send message." }); }
+  } catch (err) { console.error(err); res.status(500).json({ success: false, message: "Failed to send message." }); }
 });
 
 app.post("/api/enquiry", apiLimiter, async (req, res) => {
   const { name, phone, eventType, eventDate, guests, message } = req.body;
   if (!name || !phone) return res.status(400).json({ success: false, message: "Name and phone are required." });
   try {
-    await Enquiry.create({ name: name.trim(), phone: phone.trim(), eventType: eventType||"", eventDate: eventDate||"", guests: guests||"", message: (message||"").trim() });
+    await db.enquiries.create({ name: name.trim(), phone: phone.trim(), eventType: eventType||"", eventDate: eventDate||"", guests: guests||"", message: (message||"").trim() });
     sendEmail(process.env.NOTIFY_EMAIL, `Enquiry – ${name}`, `<p><b>${name}</b> (${phone}) enquired about <b>${eventType||"event"}</b></p><p>${message||""}</p>`);
     res.json({ success: true, message: "Enquiry received! We will call you shortly." });
-  } catch (err) { res.status(500).json({ success: false, message: "Failed to submit enquiry." }); }
+  } catch (err) { console.error(err); res.status(500).json({ success: false, message: "Failed to submit enquiry." }); }
 });
 
 app.get("/api/gallery", async (req, res) => {
-  try { res.json(await Gallery.find().sort({ order: 1, createdAt: -1 })); }
+  try { res.json(await db.gallery.find({})); }
   catch (err) { res.status(500).json({ success: false }); }
 });
 
@@ -289,7 +345,7 @@ app.post("/api/payment/create-order", apiLimiter, async (req, res) => {
     const { amount, bookingId, currency = "INR" } = req.body;
     if (!amount || amount < 1) return res.status(400).json({ success: false, message: "Invalid amount." });
     const order = await razorpay.orders.create({ amount: Math.round(amount * 100), currency, receipt: `rcpt_${bookingId||Date.now()}` });
-    await Payment.create({ orderId: order.id, bookingId: bookingId||null, amount, currency });
+    await db.payments.create({ orderId: order.id, bookingId: bookingId||null, amount, currency, status: "created" });
     res.json({ success: true, orderId: order.id, amount: order.amount, currency: order.currency, keyId: process.env.RAZORPAY_KEY_ID });
   } catch (err) { console.error(err); res.status(500).json({ success: false, message: "Failed to create payment order." }); }
 });
@@ -300,8 +356,8 @@ app.post("/api/payment/verify", async (req, res) => {
     const expected = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET||"")
       .update(razorpay_order_id + "|" + razorpay_payment_id).digest("hex");
     if (expected !== razorpay_signature) return res.status(400).json({ success: false, message: "Payment verification failed." });
-    await Payment.findOneAndUpdate({ orderId: razorpay_order_id }, { status: "paid", paymentId: razorpay_payment_id, paidAt: new Date() });
-    if (bookingId) await Booking.findByIdAndUpdate(bookingId, { paymentStatus: "paid", status: "confirmed" });
+    await db.payments.findOneAndUpdate({ orderId: razorpay_order_id }, { status: "paid", paymentId: razorpay_payment_id, paidAt: new Date() });
+    if (bookingId) await db.bookings.findByIdAndUpdate(bookingId, { paymentStatus: "paid", status: "confirmed" });
     res.json({ success: true, message: "Payment verified successfully." });
   } catch (err) { res.status(500).json({ success: false, message: "Verification error." }); }
 });
@@ -312,7 +368,7 @@ app.post("/api/payment/verify", async (req, res) => {
 app.get("/api/admin/stats", adminAuth, async (req, res) => {
   try {
     const [bookings, contacts, enquiries, checks, payments] = await Promise.all([
-      Booking.find(), Contact.find(), Enquiry.find(), QuickCheck.find(), Payment.find()
+      db.bookings.find({}), db.contacts.find({}), db.enquiries.find({}), db.quickchecks.find({}), db.payments.find({})
     ]);
     res.json({
       totalBookings:     bookings.length,
@@ -335,7 +391,7 @@ app.get("/api/bookings", adminAuth, async (req, res) => {
     const { status, search } = req.query;
     let query = {};
     if (status && status !== "all") query.status = status;
-    let rows = await Booking.find(query).sort({ createdAt: -1 });
+    let rows = await db.bookings.find(query);
     if (search) {
       const s = search.toLowerCase();
       rows = rows.filter(b => b.fullName.toLowerCase().includes(s) || b.phone.includes(s) || (b.email||"").toLowerCase().includes(s));
@@ -353,16 +409,16 @@ app.patch("/api/bookings/:id", adminAuth, async (req, res) => {
       update.status = req.body.status;
     }
     if (req.body.notes !== undefined) update.notes = req.body.notes;
-    await Booking.findByIdAndUpdate(req.params.id, update);
+    await db.bookings.findByIdAndUpdate(req.params.id, update);
     if (req.body.status === "confirmed") {
-      const booking = await Booking.findById(req.params.id);
+      const booking = await db.bookings.findById(req.params.id);
       if (booking?.email) {
         sendEmail(booking.email, "Booking Confirmed – Jawai Rajat",
           `<div style="font-family:sans-serif;background:#0f0f11;color:#f5f5f5;padding:24px;border-radius:12px">
            <h2 style="color:#f2c14f">Booking Confirmed! 🎉</h2>
            <p>Dear <b>${booking.fullName}</b>, your booking is confirmed.</p>
            <p>Arrival: <b>${booking.arrival}</b> | Departure: <b>${booking.departure}</b></p>
-           <p>📞 +91-XXXXXXXXXX | ✉️ stay@jawai-rajat.com</p></div>`);
+           <p>📞 +91-9256208646 | ✉️ stay@jawai-rajat.com</p></div>`);
       }
     }
     res.json({ success: true });
@@ -370,27 +426,27 @@ app.patch("/api/bookings/:id", adminAuth, async (req, res) => {
 });
 
 app.delete("/api/bookings/:id", adminAuth, async (req, res) => {
-  try { await Booking.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+  try { await db.bookings.findByIdAndDelete(req.params.id); res.json({ success: true }); }
   catch (err) { res.status(500).json({ success: false }); }
 });
 
 app.get("/api/contacts", adminAuth, async (req, res) => {
-  try { res.json(await Contact.find().sort({ createdAt: -1 })); }
+  try { res.json(await db.contacts.find({})); }
   catch (err) { res.status(500).json({ success: false }); }
 });
 
 app.patch("/api/contacts/:id", adminAuth, async (req, res) => {
-  try { await Contact.findByIdAndUpdate(req.params.id, { read: true }); res.json({ success: true }); }
+  try { await db.contacts.findByIdAndUpdate(req.params.id, { read: true }); res.json({ success: true }); }
   catch (err) { res.status(500).json({ success: false }); }
 });
 
 app.delete("/api/contacts/:id", adminAuth, async (req, res) => {
-  try { await Contact.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+  try { await db.contacts.findByIdAndDelete(req.params.id); res.json({ success: true }); }
   catch (err) { res.status(500).json({ success: false }); }
 });
 
 app.get("/api/enquiries", adminAuth, async (req, res) => {
-  try { res.json(await Enquiry.find().sort({ createdAt: -1 })); }
+  try { res.json(await db.enquiries.find({})); }
   catch (err) { res.status(500).json({ success: false }); }
 });
 
@@ -399,23 +455,23 @@ app.patch("/api/enquiries/:id", adminAuth, async (req, res) => {
     const update = {};
     if (req.body.status) update.status = req.body.status;
     if (req.body.notes !== undefined) update.notes = req.body.notes;
-    await Enquiry.findByIdAndUpdate(req.params.id, update);
+    await db.enquiries.findByIdAndUpdate(req.params.id, update);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ success: false }); }
 });
 
 app.delete("/api/enquiries/:id", adminAuth, async (req, res) => {
-  try { await Enquiry.findByIdAndDelete(req.params.id); res.json({ success: true }); }
+  try { await db.enquiries.findByIdAndDelete(req.params.id); res.json({ success: true }); }
   catch (err) { res.status(500).json({ success: false }); }
 });
 
 app.get("/api/quick-checks", adminAuth, async (req, res) => {
-  try { res.json(await QuickCheck.find().sort({ createdAt: -1 })); }
+  try { res.json(await db.quickchecks.find({})); }
   catch (err) { res.status(500).json({ success: false }); }
 });
 
 app.get("/api/payments", adminAuth, async (req, res) => {
-  try { res.json(await Payment.find().sort({ createdAt: -1 })); }
+  try { res.json(await db.payments.find({})); }
   catch (err) { res.status(500).json({ success: false }); }
 });
 
@@ -423,7 +479,7 @@ app.get("/api/payments", adminAuth, async (req, res) => {
 app.post("/api/admin/gallery", adminAuth, upload.single("image"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: "No image uploaded." });
-    const doc = await Gallery.create({
+    const doc = await db.gallery.create({
       filename: req.file.filename,
       url:      "/uploads/" + req.file.filename,
       alt:      (req.body.alt || "Jawai Rajat Hotel").trim(),
@@ -435,11 +491,11 @@ app.post("/api/admin/gallery", adminAuth, upload.single("image"), async (req, re
 
 app.delete("/api/admin/gallery/:id", adminAuth, async (req, res) => {
   try {
-    const item = await Gallery.findById(req.params.id);
+    const item = await db.gallery.findById(req.params.id);
     if (item) {
       const fp = path.join(UPLOADS_DIR, item.filename);
       if (fs.existsSync(fp)) fs.unlinkSync(fp);
-      await Gallery.findByIdAndDelete(req.params.id);
+      await db.gallery.findByIdAndDelete(req.params.id);
     }
     res.json({ success: true });
   } catch (err) { res.status(500).json({ success: false }); }

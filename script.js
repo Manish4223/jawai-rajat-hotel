@@ -39,52 +39,41 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch("/api/gallery")
         .then(r => r.json())
         .then(images => {
-            if (!images || !images.length) return; // keep static fallback
-            galleryGrid.innerHTML = images.map(img =>
+            if (!images || !images.length) return; // keep static fallback as is
+            // Append dynamic photos AFTER static ones — don't replace
+            const dynamicHtml = images.map(img =>
                 `<div class="gallery-item">
                     <img src="${img.url}" alt="${img.alt || 'Jawai Rajat Hotel'}" loading="lazy" />
                  </div>`
             ).join("");
+            galleryGrid.insertAdjacentHTML("beforeend", dynamicHtml);
         })
         .catch(() => {}); // keep static fallback on error
-
-    // ── Quick booking form ────────────────────────────────────────────────────
-    const quickBookingForm = document.getElementById("quick-booking");
-    const quickStatus      = document.getElementById("quick-status");
-
-    if (quickBookingForm) {
-        quickBookingForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const { checkin, checkout, guests, roomType } = quickBookingForm;
-            if (!checkin.value || !checkout.value || !guests.value || !roomType.value) {
-                setStatus(quickStatus, "Please fill all fields.", "error");
-                return;
-            }
-            fetch("/api/quick-check", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    checkin: checkin.value, checkout: checkout.value,
-                    guests: guests.value, roomType: roomType.value,
-                }),
-            }).catch(() => {});
-
-            const arrivalEl   = document.getElementById("arrival");
-            const departureEl = document.getElementById("departure");
-            const adultsEl    = document.getElementById("adults");
-            if (arrivalEl)   arrivalEl.value   = checkin.value;
-            if (departureEl) departureEl.value = checkout.value;
-            if (adultsEl)    adultsEl.value    = guests.value;
-
-            setStatus(quickStatus, "Dates saved! Fill the form below to complete your request.", "success");
-            setTimeout(() => { window.location.hash = "#booking"; }, 800);
-        });
-    }
 
     // ── Booking form ──────────────────────────────────────────────────────────
     const bookingForm   = document.getElementById("booking-form");
     const bookingStatus = document.getElementById("booking-status");
     let   lastBookingId = null;
+
+    // Set min dates for arrival/departure
+    const arrivalInput   = document.getElementById("arrival");
+    const departureInput = document.getElementById("departure");
+
+    const today = new Date().toISOString().split("T")[0];
+    if (arrivalInput)   arrivalInput.min   = today;
+    if (departureInput) departureInput.min = today;
+
+    // When arrival changes → departure min = arrival date (same day allowed)
+    if (arrivalInput) {
+        arrivalInput.addEventListener("change", () => {
+            if (!arrivalInput.value) return;
+            departureInput.min = arrivalInput.value;
+            // If departure is before arrival, clear it
+            if (departureInput.value && departureInput.value < arrivalInput.value) {
+                departureInput.value = "";
+            }
+        });
+    }
 
     if (bookingForm) {
         bookingForm.addEventListener("submit", (e) => {
