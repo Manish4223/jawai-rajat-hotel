@@ -34,6 +34,79 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // ── Gallery Lightbox ──────────────────────────────────────────────────────
+    const lightbox   = document.getElementById("lightbox");
+    const lbImg      = document.getElementById("lb-img");
+    const lbCaption  = document.getElementById("lb-caption");
+    const lbClose    = document.getElementById("lb-close");
+    const lbPrev     = document.getElementById("lb-prev");
+    const lbNext     = document.getElementById("lb-next");
+    let galleryImages = [];
+    let currentIndex  = 0;
+
+    function openLightbox(index) {
+        currentIndex = index;
+        const item = galleryImages[index];
+        lbImg.src = item.src;
+        lbImg.alt = item.alt;
+        lbCaption.textContent = item.alt || "";
+        lightbox.classList.add("open");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove("open");
+        document.body.style.overflow = "";
+        lbImg.src = "";
+    }
+
+    function showPrev() {
+        currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+        openLightbox(currentIndex);
+    }
+
+    function showNext() {
+        currentIndex = (currentIndex + 1) % galleryImages.length;
+        openLightbox(currentIndex);
+    }
+
+    function initLightbox() {
+        galleryImages = Array.from(document.querySelectorAll(".gallery-item img"));
+        galleryImages.forEach((img, i) => {
+            img.parentElement.addEventListener("click", () => openLightbox(i));
+        });
+    }
+
+    if (lbClose)  lbClose.addEventListener("click", closeLightbox);
+    if (lbPrev)   lbPrev.addEventListener("click", showPrev);
+    if (lbNext)   lbNext.addEventListener("click", showNext);
+
+    // Close on backdrop click
+    lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+
+    // Keyboard navigation
+    document.addEventListener("keydown", (e) => {
+        if (!lightbox.classList.contains("open")) return;
+        if (e.key === "Escape")     closeLightbox();
+        if (e.key === "ArrowLeft")  showPrev();
+        if (e.key === "ArrowRight") showNext();
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    lightbox.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    lightbox.addEventListener("touchend", (e) => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) diff > 0 ? showNext() : showPrev();
+    });
+
+    initLightbox();
+
+    // Re-init after dynamic gallery loads
+    setTimeout(initLightbox, 2000);
+
     // ── Dynamic Gallery ───────────────────────────────────────────────────────
     const galleryGrid = document.getElementById("gallery-grid");
     fetch("/api/gallery")
