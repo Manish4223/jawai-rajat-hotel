@@ -4,6 +4,46 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSpan = document.getElementById("year");
     if (yearSpan) yearSpan.textContent = new Date().getFullYear().toString();
 
+    // ── Scroll Reveal Animation ───────────────────────────────────────────────
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".reveal, .reveal-stagger").forEach(el => {
+        revealObserver.observe(el);
+    });
+
+    // ── Stats Counter Animation ───────────────────────────────────────────────
+    const statNums = document.querySelectorAll(".stat-num");
+    if (statNums.length) {
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseInt(el.dataset.target);
+                    const duration = 1800;
+                    const step = target / (duration / 16);
+                    let current = 0;
+                    const timer = setInterval(() => {
+                        current += step;
+                        if (current >= target) {
+                            el.textContent = target.toLocaleString("en-IN");
+                            clearInterval(timer);
+                        } else {
+                            el.textContent = Math.floor(current).toLocaleString("en-IN");
+                        }
+                    }, 16);
+                    statObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.3 });
+        statNums.forEach(el => statObserver.observe(el));
+    }
+
     // ── Status helper ─────────────────────────────────────────────────────────
     function setStatus(el, message, type = "info") {
         if (!el) return;
