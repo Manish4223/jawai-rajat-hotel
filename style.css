@@ -940,3 +940,94 @@ textarea {
         flex-direction: column;
     }
 }
+
+/* ─── MOBILE FRIENDLY IMPROVEMENTS ────────────────────────────────────────── */
+
+/* Touch targets minimum 44px */
+a, button, .btn, .tab-btn, .ab { min-height: 44px; }
+
+/* Smooth scrolling */
+html { scroll-behavior: smooth; }
+
+/* Better tap highlight */
+* { -webkit-tap-highlight-color: rgba(242,193,79,0.15); }
+
+@media (max-width: 480px) {
+
+    /* Navbar */
+    .navbar { padding: 0.7rem 1rem; }
+    .logo img { width: 36px; height: 36px; }
+    .logo-text .brand-name { font-size: 0.95rem; }
+
+    /* Hero */
+    .hero { min-height: 100svh; padding-block: 2rem; }
+    .hero-content { padding-block: 3rem 2rem; gap: 1.5rem; }
+    .hero-logo img { width: 88px; height: 88px; }
+    h1 { font-size: clamp(1.7rem, 7vw, 2.2rem); }
+    .subtitle { font-size: 0.88rem; }
+    .hero-actions { flex-direction: column; width: 100%; }
+    .hero-actions .btn { width: 100%; justify-content: center; padding: 0.85rem; }
+    .hero-meta { gap: 0.8rem; }
+    .meta-value { font-size: 0.78rem; }
+
+    /* Sections */
+    .section { padding-block: 2.8rem; }
+    .section-header h2 { font-size: clamp(1.4rem, 6vw, 2rem); }
+    .section-header p { font-size: 0.88rem; }
+
+    /* Cards */
+    .card { padding: 1.2rem; }
+    .card h3 { font-size: 1rem; }
+    .card-body, .card-meta { font-size: 0.83rem; }
+    .price { font-size: 1rem; }
+    .card-btn { width: 100%; text-align: center; }
+
+    /* Experience grid */
+    .exp-card { padding: 1rem; }
+    .exp-icon { font-size: 1.6rem; }
+    .exp-card h4 { font-size: 0.95rem; }
+    .exp-card p { font-size: 0.82rem; }
+
+    /* Gallery */
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+
+    /* Booking & Contact forms */
+    .booking-layout, .contact-layout { gap: 1.5rem; }
+    .booking-form { padding: 1.2rem; }
+    .field-group label { font-size: 0.78rem; }
+    .field-group input,
+    .field-group select,
+    .field-group textarea {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.9rem;
+        border-radius: 0.6rem;
+    }
+    .btn.full-width { padding: 0.85rem; font-size: 0.92rem; }
+
+    /* Info box */
+    .info-box { padding: 1rem; font-size: 0.83rem; }
+
+    /* Contact list */
+    .contact-list li { font-size: 0.85rem; }
+
+    /* Location card */
+    .location-section { padding-block: 2.8rem; }
+    .location-card { padding: 1.4rem 1.2rem; }
+    .lc-name { font-size: 0.95rem; }
+    .lc-btns { flex-direction: column; }
+    .lc-btn { padding: 0.8rem; font-size: 0.85rem; }
+
+    /* Footer */
+    .footer { padding-block: 1.4rem; text-align: center; }
+    .footer-content { flex-direction: column; align-items: center; gap: 0.4rem; }
+    .footer p, .footer-note { font-size: 0.78rem; }
+
+    /* WhatsApp button — smaller on mobile */
+    .whatsapp-float { width: 50px; height: 50px; bottom: 1.2rem; right: 1.2rem; }
+}
+
+@media (max-width: 360px) {
+    .gallery-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 1.5rem; }
+    .card-grid { grid-template-columns: 1fr; }
+}
