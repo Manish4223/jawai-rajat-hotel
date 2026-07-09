@@ -1031,3 +1031,166 @@ html { scroll-behavior: smooth; }
     h1 { font-size: 1.5rem; }
     .card-grid { grid-template-columns: 1fr; }
 }
+
+/* ─── ENHANCED MOBILE UX v2 ─────────────────────────────────────────────────── */
+
+/* FIX 1: iOS input zoom bug — font-size must be >= 16px on inputs */
+input, select, textarea {
+    font-size: 16px !important;
+}
+
+/* FIX 2: WhatsApp button — move up so it doesn't cover submit buttons */
+.whatsapp-float {
+    bottom: 5rem;
+}
+
+/* FIX 3: Smooth image loading */
+.gallery-item img {
+    background: #1a1a1f;
+}
+
+/* FIX 4: Better form layout at tablet (768px) */
+@media (max-width: 768px) {
+    .field-row {
+        grid-template-columns: 1fr;
+    }
+    .booking-layout,
+    .contact-layout {
+        grid-template-columns: 1fr;
+    }
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+    .experience-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* FIX 5: Better touch targets — override previous broken rule */
+a, button, .btn, .lc-btn {
+    min-height: unset;
+}
+.btn, .lc-btn {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+}
+.navbar nav a {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* FIX 6: Hero meta text overflow on small screens */
+.meta-value {
+    word-break: break-word;
+    max-width: 140px;
+}
+
+/* FIX 7: Prevent horizontal scroll */
+body, html {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* FIX 8: Better contact list on mobile */
+.contact-list li {
+    word-break: break-word;
+}
+
+/* FIX 9: Gallery lightbox feel — cursor pointer */
+.gallery-item {
+    cursor: pointer;
+}
+
+/* FIX 10: Better booking form background on mobile */
+@media (max-width: 480px) {
+    .booking-form {
+        border-radius: 1rem;
+        padding: 1.2rem 1rem;
+    }
+    /* WhatsApp even higher on very small screens */
+    .whatsapp-float {
+        bottom: 1.5rem;
+        right: 1rem;
+    }
+    /* Hero meta — stack vertically, no overflow */
+    .hero-meta {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.7rem;
+    }
+    .meta-value {
+        max-width: 100%;
+        text-align: center;
+    }
+    /* Better card spacing */
+    .card-grid {
+        gap: 1rem;
+    }
+    .card {
+        border-radius: 1rem;
+    }
+    /* Section headings */
+    .section-header {
+        margin-bottom: 1.6rem;
+    }
+    /* Contact list icons aligned */
+    .contact-list {
+        gap: 0.7rem;
+    }
+    .contact-list li {
+        line-height: 1.5;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+    /* Better textarea on mobile */
+    textarea {
+        min-height: 90px;
+    }
+    /* Smooth section transitions */
+    .section {
+        padding-block: 2.4rem;
+    }
+    /* Location card full width */
+    .location-layout {
+        grid-template-columns: 1fr !important;
+    }
+    .location-card {
+        border-radius: 1rem;
+    }
+    /* Experience grid single column on very small */
+    .experience-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    /* Navbar height fix */
+    .nav-content {
+        padding-block: 0.6rem;
+    }
+}
+
+/* FIX 11: Safe area for notched phones (iPhone X+) */
+@supports (padding: max(0px)) {
+    .navbar {
+        padding-top: max(0.75rem, env(safe-area-inset-top));
+    }
+    .footer {
+        padding-bottom: max(1.8rem, env(safe-area-inset-bottom));
+    }
+    .whatsapp-float {
+        bottom: max(5rem, calc(env(safe-area-inset-bottom) + 1rem));
+        right: max(1.6rem, env(safe-area-inset-right));
+    }
+}
+
+/* FIX 12: Better focus states for accessibility */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid #f2c14f;
+    outline-offset: 2px;
+}
