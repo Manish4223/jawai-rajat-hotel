@@ -458,31 +458,91 @@ textarea {
     background: #101114;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 1.2rem;
-    padding: 1.5rem 1.4rem;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    padding: 1.8rem 1.6rem;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.exp-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f2c14f, #f08e4a);
+    opacity: 0;
+    transition: opacity 0.25s ease;
 }
 
 .exp-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(242, 193, 79, 0.25);
+    transform: translateY(-6px);
+    border-color: rgba(242, 193, 79, 0.2);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
 }
 
-.exp-icon {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
+.exp-card:hover::before {
+    opacity: 1;
+}
+
+.exp-icon-wrap {
+    width: 60px;
+    height: 60px;
+    background: rgba(242, 193, 79, 0.08);
+    border: 1px solid rgba(242, 193, 79, 0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    color: #f2c14f;
+    transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+.exp-card:hover .exp-icon-wrap {
+    background: rgba(242, 193, 79, 0.15);
+    border-color: rgba(242, 193, 79, 0.4);
 }
 
 .exp-card h4 {
     font-size: 1rem;
     font-weight: 600;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.2rem;
     color: #f5f5f5;
 }
 
-.exp-card p {
-    font-size: 0.88rem;
-    color: rgba(245, 245, 245, 0.7);
-    line-height: 1.55;
+.exp-card > p {
+    font-size: 0.86rem;
+    color: rgba(245, 245, 245, 0.6);
+    line-height: 1.6;
+    margin-bottom: 0.6rem;
+}
+
+.exp-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.exp-features li {
+    font-size: 0.8rem;
+    color: rgba(245, 245, 245, 0.55);
+    padding-left: 1rem;
+    position: relative;
+}
+
+.exp-features li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #f2c14f;
+    font-size: 0.72rem;
 }
 
 /* Remove old experiences styles */
