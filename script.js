@@ -4,6 +4,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const yearSpan = document.getElementById("year");
     if (yearSpan) yearSpan.textContent = new Date().getFullYear().toString();
 
+    // ── Sticky Book Now Button ────────────────────────────────────────────────
+    const stickyBook = document.getElementById("sticky-book");
+    const heroSection = document.getElementById("hero");
+    if (stickyBook && heroSection) {
+        const heroObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                // Show when hero is NOT visible
+                if (!entry.isIntersecting) {
+                    stickyBook.classList.add("visible");
+                } else {
+                    stickyBook.classList.remove("visible");
+                }
+            });
+        }, { threshold: 0.1 });
+        heroObserver.observe(heroSection);
+    }
+
     // ── Scroll Reveal Animation ───────────────────────────────────────────────
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
